@@ -11,8 +11,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(25), unique=True, index=True)
     password = Column(String(255))
-    firstName = Column(String(50))
-    lastName = Column(String(50))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
     is_active = Column(Boolean, default=True)
 
 
@@ -20,8 +20,8 @@ class Employee(Base):
     __tablename__ = "employees"
 
     id = Column(Integer, primary_key=True, index=True)
-    firstName = Column(String(50))
-    lastName = Column(String(50))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
     email = Column(String(50))
     phone = Column(String(50))
     address = Column(String(50))
@@ -36,8 +36,8 @@ class Driver(Base):
     __tablename__ = "drivers"
 
     id = Column(Integer, primary_key=True, index=True)
-    firstName = Column(String(50))
-    lastName = Column(String(50))
+    first_name = Column(String(50))
+    last_name = Column(String(50))
     email = Column(String(50))
     phone = Column(String(50))
     address = Column(String(50))
@@ -60,5 +60,5 @@ class Operation(Base):
     is_finished = Column(Boolean, default=False)
 
     employees = relationship(
-        "Employee", back_populates="operations", lazy="joined")
+        "Employee", back_populates="operation", lazy="joined")
     driver = relationship("Driver", back_populates="operations", lazy="joined")

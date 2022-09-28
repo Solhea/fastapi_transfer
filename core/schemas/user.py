@@ -16,7 +16,7 @@ class UserUpdate(BaseModel):
     password: str | None = None
     firstName: str | None = None
     lastName: str | None = None
-    is_active: bool | None = None
+    isActive: bool | None = None
 
     class Config:
         orm_mode = True
