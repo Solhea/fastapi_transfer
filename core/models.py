@@ -4,6 +4,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.mysql import LONGTEXT, DECIMAL
 from core.database import Base
 
+from core.utils.enum import Department
+
 
 class User(Base):
     __tablename__ = "users"
@@ -27,8 +29,9 @@ class Employee(Base):
     address = Column(String(50))
     lat = Column(DECIMAL(10, 8))
     lng = Column(DECIMAL(11, 8))
+    department = Column(Enum(Department))
     is_picked = Column(Boolean, default=False)
-    operation_id = Column(Integer, ForeignKey("operations.id"))
+    operation_id = Column(Integer, ForeignKey("operations.id"), nullable=True)
     operation = relationship("Operation", back_populates="employees")
 
 

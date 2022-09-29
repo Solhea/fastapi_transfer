@@ -8,8 +8,8 @@ class DriverCreate(BaseModel):
     address: str
     lat: float
     lng: float
-    license_plate: str
-    on_operation: bool
+    licensePlate: str
+    onOperation: bool
 
     class Config:
         orm_mode = True
@@ -22,8 +22,8 @@ class DriverUpdate(BaseModel):
     address: str | None = None
     lat: float | None = None
     lng: float | None = None
-    license_plate: str | None = None
-    on_operation: bool | None = None
+    licensePlate: str | None = None
+    onOperation: bool | None = None
 
     class Config:
         orm_mode = True

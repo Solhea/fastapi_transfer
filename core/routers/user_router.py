@@ -69,8 +69,7 @@ def update_user_route(user_id: int, user: UserUpdate = Body(embed=False), db: Se
 def delete_user_route(user_id: int, db: Session = Depends(get_db)):
     db_user = delete_user(db, user_id)
     if db_user:
-        del db_user.password
-        return {"data": db_user}
+        return {"data": True}
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="User not deleted",

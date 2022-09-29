@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: ae9378b79054
+Revision ID: 7841a61da30f
 Revises: 
-Create Date: 2022-09-28 12:27:39.058844
+Create Date: 2022-09-29 14:51:18.491754
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = 'ae9378b79054'
+revision = '7841a61da30f'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -64,6 +64,7 @@ def upgrade() -> None:
     sa.Column('address', sa.String(length=50), nullable=True),
     sa.Column('lat', mysql.DECIMAL(precision=10, scale=8), nullable=True),
     sa.Column('lng', mysql.DECIMAL(precision=11, scale=8), nullable=True),
+    sa.Column('department', sa.Enum('IT', 'HR', 'SALES', name='department'), nullable=True),
     sa.Column('is_picked', sa.Boolean(), nullable=True),
     sa.Column('operation_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['operation_id'], ['operations.id'], ),
