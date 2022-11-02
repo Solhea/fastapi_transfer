@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 
 from core import models
 from core.database import SessionLocal, engine
@@ -10,6 +12,17 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+origins = [
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 def get_db():
     db = SessionLocal()
@@ -17,6 +30,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 app.include_router(user_router.router, prefix="/api", tags=["users"])
 app.include_router(authentication_router.router, prefix="/api", tags=["auth"])

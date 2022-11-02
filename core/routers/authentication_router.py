@@ -17,9 +17,13 @@ router = APIRouter(
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     db_user = get_user_by_username(db, form_data.username)
     if db_user is None or not verify_password(form_data.password, db_user.password):
-        raise HTTPException(status_code=404, detail="Please check your credentials")
+        raise HTTPException(
+            status_code=404, detail="Please check your credentials")
 
     access_token = create_access_token(
         data={"username": db_user.username}
     )
-    return {"data": {"access_token": access_token, "token_type": "bearer"}}
+
+    del db_user.password
+
+    return {"data": {"access_token": access_token, "user": db_user, "token_type": "bearer"}}
