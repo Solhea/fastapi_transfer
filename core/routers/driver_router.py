@@ -20,8 +20,6 @@ def read_driver(driver_id: int, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Driver not found")
 
-    del db_driver.password
-
     return {"data": db_driver}
 
 
@@ -31,9 +29,6 @@ def read_drivers(db: Session = Depends(get_db)):
     if db_drivers is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Drivers not found")
-
-    for driver in db_drivers:
-        del driver.password
 
     return {"data": db_drivers}
 
