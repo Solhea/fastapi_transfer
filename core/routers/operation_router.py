@@ -62,24 +62,28 @@ def create_operation_route(operation: OperationCreate = Body(embed=False), db: S
 @router.put("/updateOperation/{operation_id}")
 def update_operation_route(operation_id: int, operation: OperationUpdate = Body(embed=False), db: Session = Depends(get_db)):
     old_operation = get_operation(db, operation_id=operation_id)
-    for employee_id in old_operation.employees:
-        if get_employee(db, employee_id=employee_id):
-            update_employee(db, EmployeeUpdate(operation_id=None), employee_id)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Employee not found",
-            )
 
-    for employee_id in operation.employees:
-        if get_employee(db, employee_id=employee_id):
-            update_employee(db, EmployeeUpdate(
-                operation_id=operation_id), employee_id)
-        else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Employee not found",
-            )
+    if operation.employees is not None:
+
+        for employee_id in old_operation.employees:
+            if get_employee(db, employee_id=employee_id):
+                update_employee(db, EmployeeUpdate(
+                    operation_id=None), employee_id)
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Employee not found",
+                )
+
+        for employee_id in operation.employees:
+            if get_employee(db, employee_id=employee_id):
+                update_employee(db, EmployeeUpdate(
+                    operation_id=operation_id), employee_id)
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Employee not found",
+                )
 
     db_operation = update_operation(db, operation, operation_id)
     if db_operation:

@@ -37,9 +37,6 @@ def update_operation(db: Session, operation: OperationUpdate, operation_id: int)
 
     db_operation = update_optional_fields(db_operation, operation)
 
-    if operation.operation_id is None:
-        db_operation.operation_id = None
-
     try:
         db.commit()
         db.refresh(db_operation)
