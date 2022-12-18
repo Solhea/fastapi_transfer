@@ -19,7 +19,7 @@ def get_all_users(db: Session):
 
 def create_user(db: Session, user: UserCreate):
     db_user = UserTable(username=user.username, password=user.password,
-                        first_name=user.firstName, last_name=user.lastName)
+                        first_name=user.first_name, last_name=user.last_name)
     db.add(db_user)
     try:
         db.commit()

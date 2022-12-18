@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
+from core.utils.global_models import deleted
 from core.utils.helpers import get_db
-from core.schemas.operation import OperationCreate, OperationUpdate
+from core.schemas.operation import OperationGet, OperationGetAll, OperationCreate, OperationUpdate
 from core.schemas.employee import EmployeeUpdate
 from core.cruds.operation_crud import get_operation, get_all_operations, create_operation, update_operation, delete_operation
 from core.cruds.employee_crud import update_employee, get_employee
@@ -13,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/getOperation/{operation_id}")
+@router.get("/getOperation/{operation_id}", response_model=OperationGet)
 def read_operation(operation_id: int, db: Session = Depends(get_db)):
     db_operation = get_operation(db, operation_id=operation_id)
     if db_operation is None:
@@ -23,7 +24,7 @@ def read_operation(operation_id: int, db: Session = Depends(get_db)):
     return {"data": db_operation}
 
 
-@router.get("/getOperations")
+@router.get("/getOperations", response_model=OperationGetAll)
 def read_operations(db: Session = Depends(get_db)):
     db_operations = get_all_operations(db)
     if db_operations is None:
@@ -33,7 +34,7 @@ def read_operations(db: Session = Depends(get_db)):
     return {"data": db_operations}
 
 
-@router.post("/createOperation")
+@router.post("/createOperation", response_model=OperationGet)
 def create_operation_route(operation: OperationCreate = Body(embed=False), db: Session = Depends(get_db)):
     db_operation = create_operation(db, operation)
 
@@ -59,7 +60,7 @@ def create_operation_route(operation: OperationCreate = Body(embed=False), db: S
     )
 
 
-@router.put("/updateOperation/{operation_id}")
+@router.put("/updateOperation/{operation_id}", response_model=OperationGet)
 def update_operation_route(operation_id: int, operation: OperationUpdate = Body(embed=False), db: Session = Depends(get_db)):
     old_operation = get_operation(db, operation_id=operation_id)
 
@@ -94,7 +95,7 @@ def update_operation_route(operation_id: int, operation: OperationUpdate = Body(
     )
 
 
-@router.delete("/deleteOperation/{operation_id}")
+@router.delete("/deleteOperation/{operation_id}", response_model=deleted)
 def delete_operation_route(operation_id: int, db: Session = Depends(get_db)):
     db_operation = get_operation(db, operation_id=operation_id)
     if db_operation:
@@ -110,7 +111,7 @@ def delete_operation_route(operation_id: int, db: Session = Depends(get_db)):
 
         db_operation = delete_operation(db, operation_id)
         if db_operation:
-            return {"data": True}
+            return {"data": {"id": operation_id, "success": True}}
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Operation not deleted",

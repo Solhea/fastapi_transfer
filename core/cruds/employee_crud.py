@@ -15,7 +15,7 @@ def get_all_employees(db: Session):
 
 def create_employee(db: Session, employee: EmployeeCreate):
     db_employee = EmployeeTable(
-        first_name=employee.firstName, last_name=employee.lastName, email=employee.email, phone=employee.phone, address=employee.address,  department=employee.department, lat=employee.lat, lng=employee.lng, is_picked=employee.is_picked)
+        first_name=employee.first_name, last_name=employee.last_name, email=employee.email, phone=employee.phone, address=employee.address,  department=employee.department, lat=employee.lat, lng=employee.lng, is_picked=employee.is_picked)
 
     if employee.operation_id:
         db_employee.operation_id = employee.operation_id

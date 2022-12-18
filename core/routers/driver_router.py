@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
+from core.utils.global_models import deleted
 from core.utils.helpers import get_db
-from core.schemas.driver import DriverCreate, DriverUpdate
+from core.schemas.driver import DriverGet, DriverGetAll, DriverCreate, DriverUpdate
 from core.cruds.driver_crud import get_driver, get_all_drivers, create_driver, update_driver, delete_driver
 from core.middleware import hash_password, get_current_user
 
@@ -13,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/getDriver/{driver_id}")
+@router.get("/getDriver/{driver_id}", response_model=DriverGet)
 def read_driver(driver_id: int, db: Session = Depends(get_db)):
     db_driver = get_driver(db, driver_id=driver_id)
     if db_driver is None:
@@ -23,7 +24,7 @@ def read_driver(driver_id: int, db: Session = Depends(get_db)):
     return {"data": db_driver}
 
 
-@router.get("/getDrivers")
+@router.get("/getDrivers", response_model=DriverGetAll)
 def read_drivers(db: Session = Depends(get_db)):
     db_drivers = get_all_drivers(db)
     if db_drivers is None:
@@ -33,7 +34,7 @@ def read_drivers(db: Session = Depends(get_db)):
     return {"data": db_drivers}
 
 
-@router.post("/createDriver")
+@router.post("/createDriver", response_model=DriverGet)
 def create_driver_route(driver: DriverCreate = Body(embed=False), db: Session = Depends(get_db)):
     db_driver = create_driver(db, driver)
     if db_driver:
@@ -44,7 +45,7 @@ def create_driver_route(driver: DriverCreate = Body(embed=False), db: Session = 
     )
 
 
-@router.put("/updateDriver/{driver_id}")
+@router.put("/updateDriver/{driver_id}", response_model=DriverGet)
 def update_driver_route(driver_id: int, driver: DriverUpdate = Body(embed=False), db: Session = Depends(get_db)):
     db_driver = update_driver(db, driver, driver_id)
     if db_driver:
@@ -55,11 +56,11 @@ def update_driver_route(driver_id: int, driver: DriverUpdate = Body(embed=False)
     )
 
 
-@router.delete("/deleteDriver/{driver_id}")
+@router.delete("/deleteDriver/{driver_id}", response_model=deleted)
 def delete_driver_route(driver_id: int, db: Session = Depends(get_db)):
     db_driver = delete_driver(db, driver_id)
     if db_driver:
-        return {"data": True}
+        return {"data": {"id": driver_id, "success": True}}
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="Driver not deleted",

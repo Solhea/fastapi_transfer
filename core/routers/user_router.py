@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlalchemy.orm import Session
+from core.utils.global_models import deleted
 from core.utils.helpers import get_db
-from core.schemas.user import UserCreate, UserUpdate
+from core.schemas.user import UserGet, UserGetAll, UserCreate, UserUpdate
 from core.cruds.user_crud import get_user, get_all_users, create_user, update_user, delete_user
-from core.middleware import hash_password, get_current_user
+from core.middleware import hash_password
 
 
 router = APIRouter(
@@ -13,7 +14,7 @@ router = APIRouter(
 )
 
 
-@router.get("/getUser/{user_id}")
+@router.get("/getUser/{user_id}", response_model=UserGet)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = get_user(db, user_id=user_id)
     if db_user is None:
@@ -25,7 +26,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     return {"data": db_user}
 
 
-@router.get("/getUsers")
+@router.get("/getUsers", response_model=UserGetAll)
 def read_users(db: Session = Depends(get_db)):
     db_users = get_all_users(db)
     if db_users is None:
@@ -38,7 +39,7 @@ def read_users(db: Session = Depends(get_db)):
     return {"data": db_users}
 
 
-@router.post("/createUser")
+@router.post("/createUser", response_model=UserGet)
 def create_user_route(user: UserCreate = Body(embed=False), db: Session = Depends(get_db)):
     user.password = hash_password(user.password)
     db_user = create_user(db, user)
@@ -51,7 +52,7 @@ def create_user_route(user: UserCreate = Body(embed=False), db: Session = Depend
     )
 
 
-@router.put("/updateUser/{user_id}")
+@router.put("/updateUser/{user_id}", response_model=UserGet)
 def update_user_route(user_id: int, user: UserUpdate = Body(embed=False), db: Session = Depends(get_db)):
     if user.password:
         user.password = hash_password(user.password)
@@ -65,11 +66,11 @@ def update_user_route(user_id: int, user: UserUpdate = Body(embed=False), db: Se
     )
 
 
-@router.delete("/deleteUser/{user_id}")
+@router.delete("/deleteUser/{user_id}", response_model=deleted)
 def delete_user_route(user_id: int, db: Session = Depends(get_db)):
     db_user = delete_user(db, user_id)
     if db_user:
-        return {"data": True}
+        return {"data": {"id": user_id, "success": True}}
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail="User not deleted",

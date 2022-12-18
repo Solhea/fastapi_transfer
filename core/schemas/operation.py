@@ -1,6 +1,35 @@
 from pydantic import BaseModel
 from datetime import datetime
 
+from core.utils.helpers import to_camel
+from core.schemas.employee import Employee
+from core.schemas.driver import Driver
+
+
+class Operation(BaseModel):
+    id: int
+    name: str
+    description: str
+    driver: Driver
+    start_time: datetime
+    end_time: datetime
+    is_finished: bool
+    employees: list[Employee]
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class OperationGet(BaseModel):
+    data: Operation
+
+
+class OperationGetAll(BaseModel):
+    data: list[Operation]
+
+
 class OperationCreate(BaseModel):
     name: str
     description: str
@@ -12,6 +41,9 @@ class OperationCreate(BaseModel):
 
     class Config:
         orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
 
 class OperationUpdate(BaseModel):
     name: str | None = None
@@ -24,3 +56,5 @@ class OperationUpdate(BaseModel):
 
     class Config:
         orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
