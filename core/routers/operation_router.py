@@ -5,7 +5,7 @@ from core.utils.helpers import get_db
 from core.schemas.operation import OperationGet, OperationGetAll, OperationCreate, OperationUpdate
 from core.schemas.employee import EmployeeUpdate
 from core.cruds.operation_crud import get_operation, get_all_operations, create_operation, update_operation, delete_operation
-from core.cruds.employee_crud import update_employee, get_employee
+from core.cruds.employee_crud import update_employee, get_employee, update_employee_nul_operation
 
 router = APIRouter(
     prefix="/operation",
@@ -66,10 +66,9 @@ def update_operation_route(operation_id: int, operation: OperationUpdate = Body(
 
     if operation.employees is not None:
 
-        for employee_id in old_operation.employees:
-            if get_employee(db, employee_id=employee_id):
-                update_employee(db, EmployeeUpdate(
-                    operation_id=None), employee_id)
+        for employee in old_operation.employees:
+            if get_employee(db, employee_id=employee.id):
+                update_employee_nul_operation(db,  employee.id)
             else:
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,

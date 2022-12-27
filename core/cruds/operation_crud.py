@@ -35,6 +35,10 @@ def update_operation(db: Session, operation: OperationUpdate, operation_id: int)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Operation not found")
 
+    # delete employees we can't update them here
+    if operation.employees:
+        del operation.employees
+
     db_operation = update_optional_fields(db_operation, operation)
 
     try:

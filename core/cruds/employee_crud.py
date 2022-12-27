@@ -53,6 +53,25 @@ def update_employee(db: Session, employee: EmployeeUpdate, employee_id: int):
     return db_employee
 
 
+def update_employee_nul_operation(db: Session, employee_id: int):
+    db_employee = get_employee(db, employee_id)
+    if not db_employee:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Employee not found")
+
+    db_employee.operation_id = None
+    try:
+        db.commit()
+        db.refresh(db_employee)
+    except Exception as e:
+        if "Duplicate entry" in str(e):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Duplicate entry on email")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="something went wrong")
+    return db_employee
+
+
 def delete_employee(db: Session, employee_id: int):
     db_employee = get_employee(db, employee_id)
     if not db_employee:
